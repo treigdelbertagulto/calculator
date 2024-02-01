@@ -64,7 +64,7 @@ export default function Calculator() {
     function onNumberClick(number: number) {
         const operand = currentOperand === Operand.A ? operandA : operandB
         const setOperand = currentOperand === Operand.A ? setOperandA : setOperandB
-        if (isNaN(operand)) {
+        if (isNaN(Number(operand))) {
             setOperand("")
         }
         setOperand(operand + number)
