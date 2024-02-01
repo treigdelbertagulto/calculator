@@ -64,10 +64,11 @@ export default function Calculator() {
     function onNumberClick(number: number) {
         const operand = currentOperand === Operand.A ? operandA : operandB
         const setOperand = currentOperand === Operand.A ? setOperandA : setOperandB
-        if (isNaN(Number(operand))) {
-            setOperand("")
+        if (isNaN(Number(operand + number.toString()))) {
+            setOperand(number.toString())
+        } else {
+            setOperand(operand + number.toString())
         }
-        setOperand(operand + number)
     }
 
     function onDecimalPointClick() {
@@ -83,7 +84,7 @@ export default function Calculator() {
         if (currentOperand === Operand.B) {
             onEqualsClick()
         }
-        if (operandA === "" || isNaN(Number(operandA)) || Number(operandA) === Infinity) {
+        if (operandA === "") {
             return
         }
         setOperator(operator)
@@ -102,8 +103,7 @@ export default function Calculator() {
     }
 
     function onEqualsClick() {
-        if (operandA === "" || operandB === "" ||
-            isNaN(Number(operandA)) || isNaN(Number(operandB)) || operator === undefined) {
+        if (operandA === "" || operandB === "" || operator === undefined) {
             return
         }
         const operandAAsNumber = parseFloat(operandA)
