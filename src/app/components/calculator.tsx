@@ -93,6 +93,9 @@ export default function Calculator() {
     }
 
     function onEqualsClick() {
+        if (isNaN(Number(operandA)) || isNaN(Number(operandB)) || operator === undefined) {
+            return
+        }
         const operandAAsNumber = parseFloat(operandA)
         const operandBAsNumber = parseFloat(operandB)
 
