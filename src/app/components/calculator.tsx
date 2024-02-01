@@ -77,6 +77,9 @@ export default function Calculator() {
     }
 
     function onOperatorClick(operator: Operator) {
+        if (operandA === "" || isNaN(operandA)) {
+            return
+        }
         setOperator(operator)
         setCurrentOperand(Operand.B)
     }
@@ -93,7 +96,8 @@ export default function Calculator() {
     }
 
     function onEqualsClick() {
-        if (isNaN(Number(operandA)) || isNaN(Number(operandB)) || operator === undefined) {
+        if (operandA === "" || operandB === "" ||
+            isNaN(Number(operandA)) || isNaN(Number(operandB)) || operator === undefined) {
             return
         }
         const operandAAsNumber = parseFloat(operandA)
