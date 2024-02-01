@@ -77,7 +77,7 @@ export default function Calculator() {
     }
 
     function onOperatorClick(operator: Operator) {
-        if (operandA === "" || isNaN(operandA)) {
+        if (operandA === "" || isNaN(Number(operandA))) {
             return
         }
         setOperator(operator)
