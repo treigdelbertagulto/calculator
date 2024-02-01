@@ -64,6 +64,9 @@ export default function Calculator() {
     function onNumberClick(number: number) {
         const operand = currentOperand === Operand.A ? operandA : operandB
         const setOperand = currentOperand === Operand.A ? setOperandA : setOperandB
+        if (isNaN(operand)) {
+            setOperand("")
+        }
         setOperand(operand + number)
     }
 
@@ -77,7 +80,10 @@ export default function Calculator() {
     }
 
     function onOperatorClick(operator: Operator) {
-        if (operandA === "" || isNaN(Number(operandA))) {
+        if (currentOperand === Operand.B) {
+            onEqualsClick()
+        }
+        if (operandA === "" || isNaN(Number(operandA)) || Number(operandA) === Infinity) {
             return
         }
         setOperator(operator)
