@@ -247,7 +247,7 @@ export default function Calculator() {
                 span={2}
                 type={KeyType.Secondary}
                 onClick={() => {
-                    onNumberClick("0")
+                    onNumberClick(0)
                 }}
             />
             <Key
