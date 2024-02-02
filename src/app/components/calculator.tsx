@@ -122,7 +122,7 @@ export default function Calculator() {
         const setOperand = getSetOperand()
 
         function getBackspacedOperand() {
-            return operand.substring(0, operand.length - 1)
+            return operand?.substring(0, operand.length - 1)
         }
 
         if (operand !== undefined && operand.length > 0 &&
