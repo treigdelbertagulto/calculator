@@ -1,5 +1,6 @@
-import {Button, GridItem, Input, SimpleGrid} from "@chakra-ui/react";
+import {Button, GridItem, Icon, IconButton, Input, SimpleGrid} from "@chakra-ui/react";
 import React, {useState} from "react";
+import {ArrowBackIcon} from "@chakra-ui/icons";
 
 enum KeyType {
     Primary,
@@ -26,7 +27,7 @@ function Key({label, type, span, selected, onClick}: KeyProps) {
                     type === KeyType.Secondary ? "gray" :
                         "red"
             }
-            variant="solid"
+            size="lg"
         >
             {label}
         </Button>
@@ -50,37 +51,48 @@ export default function Calculator() {
     const [currentOperand, setCurrentOperand] = useState<Operand>(Operand.A)
     const [operandA, setOperandA] = useState("")
     const [operator, setOperator] = useState<Operator | undefined>(undefined)
-    const [operandB, setOperandB] = useState("")
-    const displayValue = currentOperand === Operand.A || operandB === "" ?
+    const [operandB, setOperandB] = useState<string | undefined>(undefined)
+    const displayValue = currentOperand === Operand.A || operandB === undefined ?
         operandA : operandB
+
+    function getOperand() {
+        return currentOperand === Operand.A ? operandA : operandB
+    }
+
+    function getSetOperand() {
+        return currentOperand === Operand.A ? setOperandA : setOperandB
+    }
 
     function onClear() {
         setCurrentOperand(Operand.A)
         setOperandA("")
         setOperator(undefined)
-        setOperandB("")
+        setOperandB(undefined)
     }
 
-    function onNumberClick(number: number) {
-        const operand = currentOperand === Operand.A ? operandA : operandB
-        const setOperand = currentOperand === Operand.A ? setOperandA : setOperandB
-        if (isNaN(Number(operand + number.toString()))) {
+    function onNumberInput(number: number) {
+        const operand = getOperand()
+        const setOperand = getSetOperand()
+        if (isNaN(Number(operand + number.toString())) || operand === "0" || operand === "-0") {
             setOperand(number.toString())
         } else {
             setOperand(operand + number.toString())
         }
     }
 
-    function onDecimalPointClick() {
-        const operand = currentOperand === Operand.A ? operandA : operandB
-        const setOperand = currentOperand === Operand.A ? setOperandA : setOperandB
-
-        if (!operand.includes(".")) {
+    function onDecimalPoint() {
+        const operand = getOperand()
+        const setOperand = getSetOperand()
+        if (operand && !operand.includes(".") && operand !== "-") {
             setOperand(operand + ".")
+        } else if (operand === "-") {
+            setOperand("-0.")
+        } else {
+            setOperand("0.")
         }
     }
 
-    function onOperatorClick(operator: Operator) {
+    function onOperatorSelect(operator: Operator) {
         if (currentOperand === Operand.B) {
             onEqualsClick()
         }
@@ -91,19 +103,32 @@ export default function Calculator() {
         setCurrentOperand(Operand.B)
     }
 
-    function onToggleSign() {
-        const operand = currentOperand === Operand.A ? operandA : operandB
-        const setOperand = currentOperand === Operand.A ? setOperandA : setOperandB
-
-        if (operand.startsWith("-")) {
+    function onSignToggle() {
+        const operand = getOperand()
+        const setOperand = getSetOperand()
+        if (operand !== undefined && operand.startsWith("-")) {
             setOperand(operand.substring(1))
         } else {
-            setOperand("-" + operand)
+            if (operand !== undefined) {
+                setOperand("-" + operand)
+            } else {
+                setOperand("-")
+            }
+        }
+    }
+
+    function onBackspace() {
+        const operand = getOperand()
+        const setOperand = getSetOperand()
+        if (operand !== undefined && operand.length > 0 && operand !== "Infinity") {
+            setOperand(operand.substring(0, operand.length - 1))
+        } else {
+            setOperand("")
         }
     }
 
     function onEqualsClick() {
-        if (operandA === "" || operandB === "" || operator === undefined) {
+        if (operandA === "" || operandB === undefined || operandB === "" || operator === undefined) {
             return
         }
         const operandAAsNumber = parseFloat(operandA)
@@ -122,7 +147,7 @@ export default function Calculator() {
         }
 
         setOperator(undefined)
-        setOperandB("")
+        setOperandB(undefined)
         setCurrentOperand(Operand.A)
     }
 
@@ -146,14 +171,14 @@ export default function Calculator() {
                 label="±"
                 type={KeyType.Primary}
                 onClick={() => {
-                    onToggleSign()
+                    onSignToggle()
                 }}
             />
             <Key
                 label="^"
                 type={KeyType.Primary}
                 onClick={() => {
-                    onOperatorClick(Operator.Power)
+                    onOperatorSelect(Operator.Power)
                 }}
                 selected={operator === Operator.Power}
             />
@@ -161,7 +186,7 @@ export default function Calculator() {
                 label="÷"
                 type={KeyType.Primary}
                 onClick={() => {
-                    onOperatorClick(Operator.Divide)
+                    onOperatorSelect(Operator.Divide)
                 }}
                 selected={operator === Operator.Divide}
             />
@@ -169,28 +194,28 @@ export default function Calculator() {
                 label="7"
                 type={KeyType.Secondary}
                 onClick={() => {
-                    onNumberClick(7)
+                    onNumberInput(7)
                 }}
             />
             <Key
                 label="8"
                 type={KeyType.Secondary}
                 onClick={() => {
-                    onNumberClick(8)
+                    onNumberInput(8)
                 }}
             />
             <Key
                 label="9"
                 type={KeyType.Secondary}
                 onClick={() => {
-                    onNumberClick(9)
+                    onNumberInput(9)
                 }}
             />
             <Key
                 label="×"
                 type={KeyType.Primary}
                 onClick={() => {
-                    onOperatorClick(Operator.Times)
+                    onOperatorSelect(Operator.Times)
                 }}
                 selected={operator === Operator.Times}
             />
@@ -198,28 +223,28 @@ export default function Calculator() {
                 label="4"
                 type={KeyType.Secondary}
                 onClick={() => {
-                    onNumberClick(4)
+                    onNumberInput(4)
                 }}
             />
             <Key
                 label="5"
                 type={KeyType.Secondary}
                 onClick={() => {
-                    onNumberClick(5)
+                    onNumberInput(5)
                 }}
             />
             <Key
                 label="6"
                 type={KeyType.Secondary}
                 onClick={() => {
-                    onNumberClick(6)
+                    onNumberInput(6)
                 }}
             />
             <Key
                 label="-"
                 type={KeyType.Primary}
                 onClick={() => {
-                    onOperatorClick(Operator.Minus)
+                    onOperatorSelect(Operator.Minus)
                 }}
                 selected={operator === Operator.Minus}
             />
@@ -227,44 +252,52 @@ export default function Calculator() {
                 label="1"
                 type={KeyType.Secondary}
                 onClick={() => {
-                    onNumberClick(1)
+                    onNumberInput(1)
                 }}
             />
             <Key
                 label="2"
                 type={KeyType.Secondary}
                 onClick={() => {
-                    onNumberClick(2)
+                    onNumberInput(2)
                 }}
             />
             <Key
                 label="3"
                 type={KeyType.Secondary}
                 onClick={() => {
-                    onNumberClick(3)
+                    onNumberInput(3)
                 }}
             />
             <Key
                 label="+"
                 type={KeyType.Primary}
                 onClick={() => {
-                    onOperatorClick(Operator.Plus)
+                    onOperatorSelect(Operator.Plus)
                 }}
                 selected={operator === Operator.Plus}
             />
             <Key
                 label="0"
-                span={2}
                 type={KeyType.Secondary}
                 onClick={() => {
-                    onNumberClick(0)
+                    onNumberInput(0)
                 }}
             />
             <Key
                 label="."
                 type={KeyType.Secondary}
                 onClick={() => {
-                    onDecimalPointClick()
+                    onDecimalPoint()
+                }}
+            />
+            <IconButton
+                aria-label="Backspace"
+                icon={<ArrowBackIcon />}
+                colorScheme="gray"
+                size="lg"
+                onClick={() => {
+                    onBackspace()
                 }}
             />
             <Key
