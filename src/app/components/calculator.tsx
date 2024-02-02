@@ -1,5 +1,5 @@
 import {Button, Card, CardBody, GridItem, IconButton, Input, SimpleGrid} from "@chakra-ui/react";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {ArrowBackIcon} from "@chakra-ui/icons";
 
 enum KeyType {
@@ -92,17 +92,6 @@ export default function Calculator() {
         }
     }
 
-    function onOperatorSelect(operator: Operator) {
-        if (currentOperand === Operand.B) {
-            onEqualsClick()
-        }
-        if (operandA === "") {
-            return
-        }
-        setOperator(operator)
-        setCurrentOperand(Operand.B)
-    }
-
     function onSignToggle() {
         const operand = getOperand()
         const setOperand = getSetOperand()
@@ -115,6 +104,17 @@ export default function Calculator() {
                 setOperand("-")
             }
         }
+    }
+
+    function onOperatorSelect(operator: Operator) {
+        if (currentOperand === Operand.B) {
+            onEquals()
+        }
+        if (operandA === "" || isNaN(Number(operandA))) {
+            return
+        }
+        setOperator(operator)
+        setCurrentOperand(Operand.B)
     }
 
     function onBackspace() {
@@ -133,7 +133,7 @@ export default function Calculator() {
         }
     }
 
-    function onEqualsClick() {
+    function onEquals() {
         if (operandA === "" || operandB === undefined || operandB === "" || operator === undefined) {
             return
         }
@@ -157,6 +157,40 @@ export default function Calculator() {
         setCurrentOperand(Operand.A)
     }
 
+    function onKeyUp(event: KeyboardEvent) {
+        event.preventDefault()
+        if (event.key === "Enter" || event.key === "=") {
+            onEquals()
+        } else if (event.key === "Backspace") {
+            onBackspace()
+        } else if (event.key === "Escape") {
+            onClear()
+        } else if (event.key === ".") {
+            onDecimalPoint()
+        } else if (event.key === "+") {
+            onOperatorSelect(Operator.Plus)
+        } else if (event.key === "-") {
+            onOperatorSelect(Operator.Minus)
+        } else if (event.key === "*") {
+            onOperatorSelect(Operator.Times)
+        } else if (event.key === "/") {
+            onOperatorSelect(Operator.Divide)
+        } else if (event.key === "^") {
+            onOperatorSelect(Operator.Power)
+        } else if (!isNaN(Number(event.key))) {
+            onNumberInput(Number(event.key))
+        } else if (event.key === "~") {
+            onSignToggle()
+        }
+    }
+
+    useEffect(() => {
+        window.addEventListener("keydown", onKeyUp);
+        return () => {
+            window.removeEventListener("keydown", onKeyUp);
+        };
+    });
+
     return (
         <Card variant="outline">
             <CardBody>
@@ -171,16 +205,12 @@ export default function Calculator() {
                     <Key
                         label="AC"
                         type={KeyType.Tertiary}
-                        onClick={() => {
-                            onClear()
-                        }}
+                        onClick={onClear}
                     />
                     <Key
                         label="±"
                         type={KeyType.Primary}
-                        onClick={() => {
-                            onSignToggle()
-                        }}
+                        onClick={onSignToggle}
                     />
                     <Key
                         label="^"
@@ -301,19 +331,15 @@ export default function Calculator() {
                     />
                     <IconButton
                         aria-label="Backspace"
-                        icon={<ArrowBackIcon />}
+                        icon={<ArrowBackIcon/>}
                         colorScheme="gray"
                         size="lg"
-                        onClick={() => {
-                            onBackspace()
-                        }}
+                        onClick={onBackspace}
                     />
                     <Key
                         label="="
                         type={KeyType.Primary}
-                        onClick={() => {
-                            onEqualsClick()
-                        }}
+                        onClick={onEquals}
                     />
                 </SimpleGrid>
             </CardBody>
