@@ -1,4 +1,4 @@
-import {Button, GridItem, Icon, IconButton, Input, SimpleGrid} from "@chakra-ui/react";
+import {Button, Card, CardBody, GridItem, IconButton, Input, SimpleGrid} from "@chakra-ui/react";
 import React, {useState} from "react";
 import {ArrowBackIcon} from "@chakra-ui/icons";
 
@@ -152,161 +152,165 @@ export default function Calculator() {
     }
 
     return (
-        <SimpleGrid
-            columns={4}
-            width="60"
-            spacing="2"
-        >
-            <GridItem colSpan={4}>
-                <Input value={displayValue} textAlign="end" readOnly/>
-            </GridItem>
-            <Key
-                label="AC"
-                type={KeyType.Tertiary}
-                onClick={() => {
-                    onClear()
-                }}
-            />
-            <Key
-                label="±"
-                type={KeyType.Primary}
-                onClick={() => {
-                    onSignToggle()
-                }}
-            />
-            <Key
-                label="^"
-                type={KeyType.Primary}
-                onClick={() => {
-                    onOperatorSelect(Operator.Power)
-                }}
-                selected={operator === Operator.Power}
-            />
-            <Key
-                label="÷"
-                type={KeyType.Primary}
-                onClick={() => {
-                    onOperatorSelect(Operator.Divide)
-                }}
-                selected={operator === Operator.Divide}
-            />
-            <Key
-                label="7"
-                type={KeyType.Secondary}
-                onClick={() => {
-                    onNumberInput(7)
-                }}
-            />
-            <Key
-                label="8"
-                type={KeyType.Secondary}
-                onClick={() => {
-                    onNumberInput(8)
-                }}
-            />
-            <Key
-                label="9"
-                type={KeyType.Secondary}
-                onClick={() => {
-                    onNumberInput(9)
-                }}
-            />
-            <Key
-                label="×"
-                type={KeyType.Primary}
-                onClick={() => {
-                    onOperatorSelect(Operator.Times)
-                }}
-                selected={operator === Operator.Times}
-            />
-            <Key
-                label="4"
-                type={KeyType.Secondary}
-                onClick={() => {
-                    onNumberInput(4)
-                }}
-            />
-            <Key
-                label="5"
-                type={KeyType.Secondary}
-                onClick={() => {
-                    onNumberInput(5)
-                }}
-            />
-            <Key
-                label="6"
-                type={KeyType.Secondary}
-                onClick={() => {
-                    onNumberInput(6)
-                }}
-            />
-            <Key
-                label="-"
-                type={KeyType.Primary}
-                onClick={() => {
-                    onOperatorSelect(Operator.Minus)
-                }}
-                selected={operator === Operator.Minus}
-            />
-            <Key
-                label="1"
-                type={KeyType.Secondary}
-                onClick={() => {
-                    onNumberInput(1)
-                }}
-            />
-            <Key
-                label="2"
-                type={KeyType.Secondary}
-                onClick={() => {
-                    onNumberInput(2)
-                }}
-            />
-            <Key
-                label="3"
-                type={KeyType.Secondary}
-                onClick={() => {
-                    onNumberInput(3)
-                }}
-            />
-            <Key
-                label="+"
-                type={KeyType.Primary}
-                onClick={() => {
-                    onOperatorSelect(Operator.Plus)
-                }}
-                selected={operator === Operator.Plus}
-            />
-            <Key
-                label="0"
-                type={KeyType.Secondary}
-                onClick={() => {
-                    onNumberInput(0)
-                }}
-            />
-            <Key
-                label="."
-                type={KeyType.Secondary}
-                onClick={() => {
-                    onDecimalPoint()
-                }}
-            />
-            <IconButton
-                aria-label="Backspace"
-                icon={<ArrowBackIcon />}
-                colorScheme="gray"
-                size="lg"
-                onClick={() => {
-                    onBackspace()
-                }}
-            />
-            <Key
-                label="="
-                type={KeyType.Primary}
-                onClick={() => {
-                    onEqualsClick()
-                }}
-            />
-        </SimpleGrid>
+        <Card variant="outline">
+            <CardBody>
+                <SimpleGrid
+                    columns={4}
+                    width="60"
+                    spacing={2}
+                >
+                    <GridItem colSpan={4}>
+                        <Input value={displayValue} textAlign="end" readOnly/>
+                    </GridItem>
+                    <Key
+                        label="AC"
+                        type={KeyType.Tertiary}
+                        onClick={() => {
+                            onClear()
+                        }}
+                    />
+                    <Key
+                        label="±"
+                        type={KeyType.Primary}
+                        onClick={() => {
+                            onSignToggle()
+                        }}
+                    />
+                    <Key
+                        label="^"
+                        type={KeyType.Primary}
+                        onClick={() => {
+                            onOperatorSelect(Operator.Power)
+                        }}
+                        selected={operator === Operator.Power}
+                    />
+                    <Key
+                        label="÷"
+                        type={KeyType.Primary}
+                        onClick={() => {
+                            onOperatorSelect(Operator.Divide)
+                        }}
+                        selected={operator === Operator.Divide}
+                    />
+                    <Key
+                        label="7"
+                        type={KeyType.Secondary}
+                        onClick={() => {
+                            onNumberInput(7)
+                        }}
+                    />
+                    <Key
+                        label="8"
+                        type={KeyType.Secondary}
+                        onClick={() => {
+                            onNumberInput(8)
+                        }}
+                    />
+                    <Key
+                        label="9"
+                        type={KeyType.Secondary}
+                        onClick={() => {
+                            onNumberInput(9)
+                        }}
+                    />
+                    <Key
+                        label="×"
+                        type={KeyType.Primary}
+                        onClick={() => {
+                            onOperatorSelect(Operator.Times)
+                        }}
+                        selected={operator === Operator.Times}
+                    />
+                    <Key
+                        label="4"
+                        type={KeyType.Secondary}
+                        onClick={() => {
+                            onNumberInput(4)
+                        }}
+                    />
+                    <Key
+                        label="5"
+                        type={KeyType.Secondary}
+                        onClick={() => {
+                            onNumberInput(5)
+                        }}
+                    />
+                    <Key
+                        label="6"
+                        type={KeyType.Secondary}
+                        onClick={() => {
+                            onNumberInput(6)
+                        }}
+                    />
+                    <Key
+                        label="-"
+                        type={KeyType.Primary}
+                        onClick={() => {
+                            onOperatorSelect(Operator.Minus)
+                        }}
+                        selected={operator === Operator.Minus}
+                    />
+                    <Key
+                        label="1"
+                        type={KeyType.Secondary}
+                        onClick={() => {
+                            onNumberInput(1)
+                        }}
+                    />
+                    <Key
+                        label="2"
+                        type={KeyType.Secondary}
+                        onClick={() => {
+                            onNumberInput(2)
+                        }}
+                    />
+                    <Key
+                        label="3"
+                        type={KeyType.Secondary}
+                        onClick={() => {
+                            onNumberInput(3)
+                        }}
+                    />
+                    <Key
+                        label="+"
+                        type={KeyType.Primary}
+                        onClick={() => {
+                            onOperatorSelect(Operator.Plus)
+                        }}
+                        selected={operator === Operator.Plus}
+                    />
+                    <Key
+                        label="0"
+                        type={KeyType.Secondary}
+                        onClick={() => {
+                            onNumberInput(0)
+                        }}
+                    />
+                    <Key
+                        label="."
+                        type={KeyType.Secondary}
+                        onClick={() => {
+                            onDecimalPoint()
+                        }}
+                    />
+                    <IconButton
+                        aria-label="Backspace"
+                        icon={<ArrowBackIcon />}
+                        colorScheme="gray"
+                        size="lg"
+                        onClick={() => {
+                            onBackspace()
+                        }}
+                    />
+                    <Key
+                        label="="
+                        type={KeyType.Primary}
+                        onClick={() => {
+                            onEqualsClick()
+                        }}
+                    />
+                </SimpleGrid>
+            </CardBody>
+        </Card>
     )
 }
