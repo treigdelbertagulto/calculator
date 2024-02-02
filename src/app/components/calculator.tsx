@@ -126,7 +126,7 @@ export default function Calculator() {
         }
 
         if (operand !== undefined && operand.length > 0 &&
-            (getBackspacedOperand() === "-" || !isNaN(getBackspacedOperand()))) {
+            (getBackspacedOperand() === "-" || !isNaN(Number(getBackspacedOperand())))) {
             setOperand(getBackspacedOperand())
         } else {
             setOperand("")
