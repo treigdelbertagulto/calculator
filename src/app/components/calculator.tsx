@@ -120,7 +120,7 @@ export default function Calculator() {
     function onBackspace() {
         const operand = getOperand()
         const setOperand = getSetOperand()
-        if (operand !== undefined && operand.length > 0 && operand !== "Infinity") {
+        if (operand !== undefined && operand.length > 0 && !isNaN(Number(operand.substring(0, operand.length - 1)))) {
             setOperand(operand.substring(0, operand.length - 1))
         } else {
             setOperand("")
