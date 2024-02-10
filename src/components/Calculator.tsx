@@ -16,6 +16,7 @@ import {useEffect, useState} from "react";
 import {ArrowBackIcon} from "@chakra-ui/icons";
 import {MdOutlineKeyboard} from "react-icons/md";
 import ShortcutsModal from "./ShortcutsModal.tsx";
+import calculate, {MathError, Operator, parseOperand} from "../logic/Calculate.ts";
 
 enum KeyType {
     Primary,
@@ -54,17 +55,9 @@ enum Operand {
     B,
 }
 
-enum Operator {
-    Plus,
-    Minus,
-    Times,
-    Divide,
-    Power,
-}
-
 export default function Calculator() {
     const [currentOperand, setCurrentOperand] = useState<Operand>(Operand.A)
-    const [operandA, setOperandA] = useState("")
+    const [operandA, setOperandA] = useState("0")
     const [operator, setOperator] = useState<Operator | undefined>(undefined)
     const [operandB, setOperandB] = useState<string | undefined>(undefined)
     const displayValue = currentOperand === Operand.A || operandB === undefined ?
@@ -82,7 +75,7 @@ export default function Calculator() {
 
     function onClear() {
         setCurrentOperand(Operand.A)
-        setOperandA("")
+        setOperandA("0")
         setOperator(undefined)
         setOperandB(undefined)
     }
@@ -90,8 +83,11 @@ export default function Calculator() {
     function onNumberInput(number: number) {
         const operand = getOperand()
         const setOperand = getSetOperand()
-        if (isNaN(Number(operand + number.toString())) || operand === "0" || operand === "-0") {
+
+        if (parseOperand(operand + number.toString()) === MathError || operand === "0") {
             setOperand(number.toString())
+        } else if (operand === "-0") {
+            setOperand("-" + number.toString())
         } else {
             setOperand(operand + number.toString())
         }
@@ -100,38 +96,52 @@ export default function Calculator() {
     function onDecimalPoint() {
         const operand = getOperand()
         const setOperand = getSetOperand()
-        if (operand && !operand.includes(".") && operand !== "-") {
-            setOperand(operand + ".")
-        } else if (operand === "-") {
-            setOperand("-0.")
-        } else {
-            setOperand("0.")
+
+        if (operand !== undefined) {
+            if (parseOperand(operand) === MathError) {
+                setOperand("0.")
+            } else if (!operand.includes(".")) {
+                setOperand(operand + ".")
+            }
         }
     }
 
     function onSignToggle() {
         const operand = getOperand()
         const setOperand = getSetOperand()
-        if (operand !== undefined && operand.startsWith("-")) {
+
+        if (operand === undefined) {
+            setOperand("-0")
+        } else if (operand.startsWith("-")) {
             setOperand(operand.substring(1))
         } else {
-            if (operand !== undefined) {
-                setOperand("-" + operand)
-            } else {
-                setOperand("-")
-            }
+            setOperand("-" + operand)
         }
     }
 
-    function onOperatorSelect(operator: Operator) {
+    function onOperatorSelect(newOperator: Operator) {
+        let cancelOperator = parseOperand(operandA) === MathError
         if (currentOperand === Operand.B) {
-            onEquals()
+            if (operandB !== undefined && operator !== undefined) {
+                const result = calculate(
+                    parseOperand(operandA),
+                    parseOperand(operandB),
+                    operator,
+                )
+
+                setOperandA(result.toString())
+
+                setOperator(undefined)
+                setOperandB(undefined)
+                setCurrentOperand(Operand.A)
+
+                cancelOperator = result === MathError
+            }
         }
-        if (operandA === "" || isNaN(Number(operandA))) {
-            return
+        if (!cancelOperator) {
+            setOperator(newOperator)
+            setCurrentOperand(Operand.B)
         }
-        setOperator(operator)
-        setCurrentOperand(Operand.B)
     }
 
     function onBackspace() {
@@ -139,35 +149,29 @@ export default function Calculator() {
         const setOperand = getSetOperand()
 
         function getBackspacedOperand() {
-            return operand?.substring(0, operand.length - 1) ?? ""
+            const newOperand = operand?.substring(0, operand.length - 1) ?? "0"
+            return newOperand === "" ? "0" : newOperand === "-" ? "-0" : newOperand
         }
 
-        if (operand !== undefined && operand.length > 0 &&
-            (getBackspacedOperand() === "-" || !isNaN(Number(getBackspacedOperand())))) {
-            setOperand(getBackspacedOperand())
+        if (operand === undefined || parseOperand(operand) === MathError) {
+            setOperand("0")
         } else {
-            setOperand("")
+            setOperand(getBackspacedOperand())
         }
     }
 
     function onEquals() {
-        if (operandA === "" || operandB === undefined || operandB === "" || operator === undefined) {
+        if (operandB === undefined || operator === undefined) {
             return
         }
-        const operandAAsNumber = parseFloat(operandA)
-        const operandBAsNumber = parseFloat(operandB)
 
-        if (operator === Operator.Plus) {
-            setOperandA((operandAAsNumber + operandBAsNumber).toString())
-        } else if (operator === Operator.Minus) {
-            setOperandA((operandAAsNumber - operandBAsNumber).toString())
-        } else if (operator === Operator.Times) {
-            setOperandA((operandAAsNumber * operandBAsNumber).toString())
-        } else if (operator === Operator.Divide) {
-            setOperandA((operandAAsNumber / operandBAsNumber).toString())
-        } else if (operator === Operator.Power) {
-            setOperandA((operandAAsNumber ** operandBAsNumber).toString())
-        }
+        setOperandA(
+            calculate(
+                parseOperand(operandA),
+                parseOperand(operandB),
+                operator,
+            ).toString()
+        )
 
         setOperator(undefined)
         setOperandB(undefined)
@@ -370,7 +374,7 @@ export default function Calculator() {
                     </Stack>
                 </CardBody>
             </Card>
-            
+
             <ShortcutsModal isOpen={showingShortcuts} onClose={hideShortcuts}/>
         </>
     )
